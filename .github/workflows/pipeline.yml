@@ -34,7 +34,7 @@ jobs:
   tag_release:
     if: |
       github.event_name == 'push' ||
-      !contains(github.event.head_commit.message, '#SKIP')
+      !contains(join(github.event.commits.*.message), '#SKIP')
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
     steps:
@@ -50,7 +50,7 @@ jobs:
   heroku_deployment:
     if: |
       github.event_name == 'push' ||
-      !contains(github.event.head_commit.message, '#SKIP')
+      !contains(join(github.event.commits.*.message), '#SKIP')
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -75,7 +75,7 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - name: commits
         env:
-          COMMITS: ${{ contains(join(github.event.commits), '#SKIP') }}
+          COMMITS: ${{ contains(join(github.event.commits.*.message), '#SKIP') }}
         run: echo "$COMMITS"
       - name: commit messages
         env:
