@@ -26,11 +26,9 @@ jobs:
       - name: test
         run: npm run test
   tag_release:
+    if: (!contains(join(github.event.commits.*.message), '#SKIP'))
     runs-on: ubuntu-20.04
     needs: [simple_deployment_pipeline]
-    if: |
-      github.event_name == 'push' ||
-      !contains(join(github.event.commits.*.message), '#SKIP')
     steps:
     - uses: actions/checkout@v2
       with:
@@ -42,7 +40,7 @@ jobs:
         WITH_V: true
         DEFAULT_BUMP: patch
   heroku_deployment:
-    if: (!contains(join(github.event.commits.*.message), '#SKIP'))
+    if: (!contains(join(github.event.commits.*.message), '#SKIP')) || github.event_name == 'push'
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -57,9 +55,6 @@ jobs:
           healthcheck: "https://marvelous-crater-lake-02747.herokuapp.com/health"
           checkstring: "ok"
           rollbackonhealthcheckfailed: true
-        if: |
-          github.event_name == 'push' ||
-          !contains(join(github.event.commits.*.message), '#SKIP')
   a_test_job:
     runs-on: ubuntu-20.04
     steps:
