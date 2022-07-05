@@ -42,6 +42,7 @@ jobs:
         WITH_V: true
         DEFAULT_BUMP: patch
   heroku_deployment:
+    if: (!contains(join(github.event.commits.*.message), '#SKIP'))
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
