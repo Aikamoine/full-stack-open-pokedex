@@ -40,7 +40,7 @@ jobs:
       with:
         fetch-depth: '0'
     - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@1.36.0
+      uses: anothrNick/github-tag-action@eca2b69f9e2c24be7decccd0f15fdb1ea5906598
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         WITH_V: true
@@ -48,6 +48,7 @@ jobs:
   heroku_deployment:
     if: (!contains(join(github.event.commits.*.message), '#SKIP')) && github.event_name == 'push'
     runs-on: ubuntu-20.04
+    needs: [simple_deployment_pipeline]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
@@ -57,23 +58,25 @@ jobs:
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "marvelous-crater-lake-02747" #Must be unique in Heroku
-          heroku_email: "atte.laakso91@gmail.com"
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
           healthcheck: "https://marvelous-crater-lake-02747.herokuapp.com/health"
           checkstring: "ok"
           rollbackonhealthcheckfailed: true
-  a_test_job:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: github context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: commits
-        env:
-          COMMITS: ${{ !contains(join(github.event.commits.*.message), '#SKIP') }}
-        run: echo "$COMMITS"
-      - name: commit messages
-        env:
-          COMMIT_MESSAGES: ${{ join(github.event.commits.*.message) }}
-        run: echo "$COMMIT_MESSAGES"
+      - name: Success
+        uses: rjstone/discord-webhook-notify@v1
+        if: ${{ github.event_name == 'push'  && success()}}
+        with:
+            severity: info
+            text: Pokedex-app succesfully deployed to Heroku
+            description:
+            details: to https://marvelous-crater-lake-02747.herokuapp.com/ by ${{ github.actor}}
+            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Failure
+        uses: rjstone/discord-webhook-notify@v1
+        if: ${{ github.event_name == 'push' && failure()}} 
+        with:
+            severity: error
+            text: Pokedex-app deployment to Heroku failed
+            description: commit
+            details: 'https://github.com/Aikamoine/full-stack-open-pokedex/commit/${{github.sha}} by ${{github.actor}} did not succesfully deploy'
+            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
