@@ -50,7 +50,7 @@ jobs:
   heroku_deployment:
     if: |
       github.event_name == 'push' ||
-      "!contains(github.event.head_commit.message, '#SKIP')"
+      !contains(github.event.head_commit.message, '#SKIP')
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
