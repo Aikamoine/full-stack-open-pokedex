@@ -34,7 +34,7 @@ jobs:
   tag_release:
     if: |
       github.event_name == 'push' ||
-      "!contains(github.event.head_commit.message, '#SKIP')"
+      !contains(github.event.head_commit.message, '#SKIP')
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
     steps:
