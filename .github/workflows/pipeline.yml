@@ -25,8 +25,14 @@ jobs:
         run: npm run build
       - name: test
         run: npm run test
+      - name: e2e tests
+        uses: cypress-io/github-action@v2
+        with:
+          command: npm run test:e2e
+          start: npm run start-prod
+          wait-on: http://localhost:5000
   tag_release:
-    if: (!contains(join(github.event.commits.*.message), '#SKIP'))
+    if: (!contains(join(github.event.commits.*.message), '#SKIP')) && github.event_name == 'push'
     runs-on: ubuntu-20.04
     needs: [simple_deployment_pipeline]
     steps:
