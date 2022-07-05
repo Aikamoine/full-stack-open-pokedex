@@ -32,11 +32,11 @@ jobs:
           start: npm run start-prod
           wait-on: http://localhost:5000
   tag_release:
+    runs-on: ubuntu-20.04
+    needs: [simple_deployment_pipeline]
     if: |
       github.event_name == 'push' ||
       !contains(join(github.event.commits.*.message), '#SKIP')
-    needs: [simple_deployment_pipeline]
-    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
       with:
@@ -48,10 +48,10 @@ jobs:
         WITH_V: true
         DEFAULT_BUMP: patch
   heroku_deployment:
+    runs-on: ubuntu-20.04
     if: |
       github.event_name == 'push' ||
       !contains(join(github.event.commits.*.message), '#SKIP')
-    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v2
@@ -75,7 +75,7 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - name: commits
         env:
-          COMMITS: ${{ contains(join(github.event.commits.*.message), '#SKIP') }}
+          COMMITS: ${{ !contains(join(github.event.commits.*.message), '#SKIP') }}
         run: echo "$COMMITS"
       - name: commit messages
         env:
