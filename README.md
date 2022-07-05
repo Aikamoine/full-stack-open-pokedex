@@ -1,5 +1,7 @@
 # Full Stack open CI/CD
 
+Last assignment available at <https://github.com/Aikamoine/fs-project>
+
 This repository is used for the CI/CD module of the Full stack open course
 
 Fork the repository to complete course exercises

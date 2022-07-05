@@ -62,3 +62,21 @@ jobs:
           healthcheck: "https://marvelous-crater-lake-02747.herokuapp.com/health"
           checkstring: "ok"
           rollbackonhealthcheckfailed: true
+      - name: Success
+        uses: rjstone/discord-webhook-notify@v1
+        if: ${{ github.event_name == 'push'  && success()}}
+        with:
+          severity: info
+          text: Pokedex-app succesfully deployed to Heroku
+          description:
+          details: to https://marvelous-crater-lake-02747.herokuapp.com/ by ${{ github.actor}}
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+      - name: Failure
+        uses: rjstone/discord-webhook-notify@v1
+        if: ${{ github.event_name == 'push' && failure()}} 
+        with:
+          severity: error
+          text: Pokedex-app deployment to Heroku failed
+          description: commit
+          details: 'https://github.com/Aikamoine/full-stack-open-pokedex/commit/${{github.sha}} by ${{github.actor}} did not succesfully deploy'
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
