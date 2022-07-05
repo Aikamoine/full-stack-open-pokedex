@@ -1,0 +1,24 @@
+name: health check
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize]
+
+jobs:
+  health_check:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@v2
+        with:
+          url: https://marvelous-crater-lake-02747.herokuapp.com/health
+          # Fail this action after this many failed attempts
+          max-attempts: 3
+          # Delay between retries, Heroku might answer slowly
+          retry-delay: 15s
+          # Retry all errors, including 404. This option might trigger curl upgrade.
+          retry-all: false # Optional, defaults to "false"
