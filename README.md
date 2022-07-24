@@ -1,5 +1,6 @@
 # Full Stack open CI/CD
 
+Pokedex available at <https://marvelous-crater-lake-02747.herokuapp.com/>
 Last assignment available at <https://github.com/Aikamoine/fs-project>
 
 This repository is used for the CI/CD module of the Full stack open course
